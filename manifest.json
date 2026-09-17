@@ -1,0 +1,18 @@
+{
+  "name": "branKAS",
+  "short_name": "branKAS",
+  "description": "Aplikasi branKAS",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
