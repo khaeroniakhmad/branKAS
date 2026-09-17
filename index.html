@@ -1,25 +1,458 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>branKAS</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        iframe { border: none; width: 100%; height: 100%; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="branKAS" />
+  <title>branKAS</title>
+
+  <!-- App Icon & Favicon -->
+  <link rel="icon" href="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" />
+  
+  <!-- Dynamic Web App Manifest placeholder for single-file PWA -->
+  <link rel="manifest" id="manifestLink" />
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg: #0f172a;
+      --text-main: #ffffff;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      min-height: -webkit-fill-available;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+    }
+
+    .app-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      border: none;
+      display: block;
+      background-color: #ffffff;
+    }
+
+    .loader-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .loader-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .app-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .app-icon {
+      width: 76px;
+      height: 76px;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4));
+    }
+
+    .app-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .spinner-container {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 16px;
+    }
+
+    .spinner-ring {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+    }
+
+    .status-text {
+      color: var(--text-sub);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .slow-notice {
+      display: none;
+      max-width: 320px;
+      margin-top: 16px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.4;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .btn-retry {
+      margin-top: 12px;
+      padding: 8px 18px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-retry:hover {
+      background: var(--primary-hover);
+    }
+
+    .offline-banner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ef4444;
+      color: #ffffff;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 200;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .offline-banner.active {
+      transform: translateY(0);
+    }
+
+    .install-banner {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      width: calc(100% - 32px);
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 90;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .install-banner.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .install-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .install-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    .install-text h4 {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .install-text p {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .install-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-install {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-install:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-dismiss {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      padding: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .btn-dismiss:hover {
+      color: #ffffff;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
+  <div class="app-viewport">
+    <!-- Network Status Overlay -->
+    <div class="offline-banner" id="offlineBanner">
+      ⚠️ Anda sedang offline. Periksa koneksi internet Anda.
+    </div>
 
-    <!-- Memanggil Google Script Anda secara penuh di layar -->
-    <iframe src="https://script.google.com/macros/s/AKfycbwgRdiwsB2wWMrLS-PzchLYp6FxkzyV3aBeru76RFzZ4qCyuAFiRoGV9TLO7YgZEQvQ/exec"></iframe>
+    <!-- PWA Install Prompt Banner -->
+    <div class="install-banner" id="installBanner">
+      <div class="install-info">
+        <img src="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" alt="branKAS Icon" class="install-icon" />
+        <div class="install-text">
+          <h4>Instal branKAS</h4>
+          <p>Pasang di layar utama Anda</p>
+        </div>
+      </div>
+      <div class="install-actions">
+        <button class="btn-install" id="btnInstall">Instal</button>
+        <button class="btn-dismiss" id="btnDismissInstall" aria-label="Tutup">✕</button>
+      </div>
+    </div>
 
-    <script>
-        // Mendaftarkan Service Worker agar bisa diinstal di Chrome
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+    <!-- Splash Loader Screen -->
+    <div class="loader-overlay" id="loader">
+      <div class="app-brand">
+        <img src="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" alt="branKAS Icon" class="app-icon" />
+        <h1 class="app-title">branKAS</h1>
+      </div>
+      <div class="spinner-container">
+        <div class="spinner-ring"></div>
+      </div>
+      <div class="status-text" id="statusText">Memuat aplikasi...</div>
+      
+      <!-- Cold-start notice for Google Apps Script -->
+      <div class="slow-notice" id="slowNotice">
+        <p>Google Apps Script membutuhkan waktu lebih lama untuk merespons.</p>
+        <button class="btn-retry" onclick="reloadApp()">Muat Ulang Aplikasi</button>
+      </div>
+    </div>
+
+    <!-- Embedded App Frame -->
+    <iframe
+      id="appFrame"
+      src="https://script.google.com/macros/s/AKfycbzvKOiE0mZDkOrdqHsyYU6L82ZI5dk1rjsnk1K1P2HrAYOiJv6k0o4DgmmBxbgPFgxy/exec"
+      title="branKAS"
+      allow="geolocation; microphone; camera; display-capture; autoplay; clipboard-write; clipboard-read"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script>
+    (function createDynamicManifest() {
+      const manifestData = {
+        "name": "branKAS Web App",
+        "short_name": "branKAS",
+        "description": "Aplikasi Web branKAS",
+        "start_url": "./",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#0f172a",
+        "theme_color": "#4f46e5",
+        "icons": [
+          {
+            "src": "https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png",
+            "sizes": "192x192 512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+          }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+      const manifestUrl = URL.createObjectURL(blob);
+      document.getElementById('manifestLink').setAttribute('href', manifestUrl);
+    })();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swCode = `
+          const CACHE_NAME = 'brankas-pwa-v1';
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
+          self.addEventListener('fetch', (e) => {
+            // Normal pass-through network fetch for live iframe content
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl)
+          .then(reg => console.log('PWA ServiceWorker registered standardly'))
+          .catch(err => console.warn('PWA ServiceWorker registration error:', err));
+      });
+    }
+
+    const loader = document.getElementById('loader');
+    const appFrame = document.getElementById('appFrame');
+    const statusText = document.getElementById('statusText');
+    const slowNotice = document.getElementById('slowNotice');
+    const offlineBanner = document.getElementById('offlineBanner');
+
+    let isLoaded = false;
+
+    // Fade out splash loader when iframe loads
+    appFrame.addEventListener('load', () => {
+      isLoaded = true;
+      loader.classList.add('hidden');
+    });
+
+    function reloadApp() {
+      loader.classList.remove('hidden');
+      slowNotice.style.display = 'none';
+      statusText.innerText = 'Memuat ulang aplikasi...';
+      appFrame.src = appFrame.src;
+    }
+
+    // Cold-start timer for Google Apps Script (8 seconds)
+    setTimeout(() => {
+      if (!isLoaded) {
+        statusText.innerText = 'Masih memuat...';
+        slowNotice.style.display = 'block';
+      }
+    }, 8000);
+
+    function updateOnlineStatus() {
+      if (!navigator.onLine) {
+        offlineBanner.classList.add('active');
+      } else {
+        offlineBanner.classList.remove('active');
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    let deferredPrompt;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const btnDismissInstall = document.getElementById('btnDismissInstall');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent automatic mini-infobar on mobile Chrome
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show our custom branded install prompt banner
+      installBanner.classList.add('visible');
+    });
+
+    btnInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`PWA Install prompt response: ${outcome}`);
+        deferredPrompt = null;
+        installBanner.classList.remove('visible');
+      }
+    });
+
+    btnDismissInstall.addEventListener('click', () => {
+      installBanner.classList.remove('visible');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBanner.classList.remove('visible');
+      deferredPrompt = null;
+      console.log('branKAS PWA successfully installed!');
+    });
+  </script>
 </body>
 </html>
+```
