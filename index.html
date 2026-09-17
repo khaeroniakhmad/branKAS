@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JNC Edukasi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>branKAS</title>
   <link rel="icon" href="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" type="image/x-icon">
   <style>
     * {
@@ -14,19 +14,24 @@
     html, body {
       width: 100%;
       height: 100%;
-      height: 100dvh;
+      /* Mengatasi bug tinggi layar di browser seluler */
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #ffffff;
     }
     .iframe-container {
       position: relative;
       width: 100%;
       height: 100%;
+      display: flex;
+      flex-direction: column;
     }
     iframe {
       width: 100%;
       height: 100%;
+      flex: 1;
       border: none;
       display: block;
     }
@@ -41,6 +46,8 @@
       gap: 12px;
       color: #555;
       z-index: 10;
+      /* Mencegah loader menghalangi sentuhan jika terlambat hilang */
+      pointer-events: none; 
     }
     .spinner {
       width: 36px;
