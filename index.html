@@ -1,80 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>branKAS</title>
-  <link rel="icon" href="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" type="image/x-icon">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      /* Mengatasi bug tinggi layar di browser seluler */
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #ffffff;
-    }
-    .iframe-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      flex: 1;
-      border: none;
-      display: block;
-    }
-    .loader-wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      color: #555;
-      z-index: 10;
-      /* Mencegah loader menghalangi sentuhan jika terlambat hilang */
-      pointer-events: none; 
-    }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 4px solid #e0e0e0;
-      border-top-color: #007bff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>branKAS</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        iframe { border: none; width: 100%; height: 100%; }
+    </style>
 </head>
 <body>
-  <div class="iframe-container">
-    <div class="loader-wrapper" id="loader">
-      <div class="spinner"></div>
-      <span>Loading app...</span>
-    </div>
-    <iframe
-      src="https://script.google.com/macros/s/AKfycbzvKOiE0mZDkOrdqHsyYU6L82ZI5dk1rjsnk1K1P2HrAYOiJv6k0o4DgmmBxbgPFgxy/exec"
-      title="branKAS"
-      onload="document.getElementById('loader').style.display='none';"
-      allow="geolocation; microphone; camera"
-      allowfullscreen>
-    </iframe>
-  </div>
+
+    <!-- Memanggil Google Script Anda secara penuh di layar -->
+    <iframe src="https://script.google.com/macros/s/AKfycbwgRdiwsB2wWMrLS-PzchLYp6FxkzyV3aBeru76RFzZ4qCyuAFiRoGV9TLO7YgZEQvQ/exec"></iframe>
+
+    <script>
+        // Mendaftarkan Service Worker agar bisa diinstal di Chrome
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
