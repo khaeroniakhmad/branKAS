@@ -1,7 +1,7 @@
 {
   "name": "branKAS",
   "short_name": "branKAS",
-  "description": "Aplikasi branKAS",
+  "description": "branKAS",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/3068/3068327.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3068/3068327.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
